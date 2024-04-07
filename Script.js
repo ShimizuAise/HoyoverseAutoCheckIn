@@ -27,7 +27,7 @@ const profiles = [{
     genshin: true,
     honkai_star_rail: true,
     honkai_3: true,
-    accountName: "Aise"
+    accountName: "YOUR NAME HERE"
 }];
 
 // Notification configuration, Turn the notify to 'true' or 'false' depends what your needs
