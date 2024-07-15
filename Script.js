@@ -27,7 +27,7 @@ const profiles = [{
     genshin: true,
     honkai_star_rail: true,
     honkai_3: true,
-    zenless: true,
+    zenless: true, // ZZZ Update
     accountName: "YOUR NAME HERE"
 }];
 
@@ -49,10 +49,10 @@ const log = (message) => {
 
 // URLs for different games
 const urls = {
+    zenless: 'https://sg-act-nap-api.hoyolab.com/event/luna/zzz/os/sign?lang=en-us&act_id=e202406031448091',  // ZZZ Update
     genshin: 'https://sg-hk4e-api.hoyolab.com/event/sol/sign?lang=en-us&act_id=e202102251931481',
     starRail: 'https://sg-public-api.hoyolab.com/event/luna/os/sign?lang=en-us&act_id=e202303301540311',
     honkai3: 'https://sg-public-api.hoyolab.com/event/mani/sign?lang=en-us&act_id=e202110291205111',
-    zenless: 'https://sg-act-nap-api.hoyolab.com/event/luna/zzz/os/sign?lang=en-us&act_id=e202406031448091',
 };
 
 // Function to handle HTTP requests
@@ -107,7 +107,7 @@ const main = async () => {
         if (profile.genshin) { urlsToCheck.push(urls.genshin); gameNames.push("Genshin Impact"); }
         if (profile.honkai_star_rail) { urlsToCheck.push(urls.starRail); gameNames.push("Honkai Star Rail"); }
         if (profile.honkai_3) { urlsToCheck.push(urls.honkai3); gameNames.push("Honkai Impact 3"); }
-        if (profile.zenless) { urlsToCheck.push(urls.zenless); gameNames.push("Zenless Zone Zero"); }
+        if (profile.zenless) { urlsToCheck.push(urls.zenless); gameNames.push("Zenless Zone Zero"); } // ZZZ Update
 
         const responses = await fetchUrls(urlsToCheck, profile.token);
         
