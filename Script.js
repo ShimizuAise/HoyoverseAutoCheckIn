@@ -135,7 +135,7 @@ const main = async () => {
         const profileResult = gameMap.map((game, index) => {
             if (responses[index] === "OK") {
                 return `${game.game}: Check-in Success!`;
-            } else if (responses[index].includes("already checked in today")  || responses[index].includes("already signed in")) {
+            } else if (responses[index].includes("already checked in")  || responses[index].includes("already signed in")) {
                 return `${game.game}: Already Checked in today!`;
             } else if (responses[index].includes("Not logged in") || responses[index].includes("Please log in to take part in the event")) {
                 return `${game.game}: There's some issue with your provided account settings!`;
