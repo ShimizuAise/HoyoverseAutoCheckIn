@@ -55,11 +55,32 @@ const urls = {
     honkai3: 'https://sg-public-api.hoyolab.com/event/mani/sign?lang=en-us&act_id=e202110291205111',
 };
 
+const buildHeaders = (game, token) => {
+    const headers = {
+      Cookie: token,
+      Accept: "application/json, text/plain, */*",
+      "Accept-Encoding": "gzip, deflate, br, zstd",
+      Connection: "keep-alive",
+      "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      Referer: "https://act.hoyolab.com/",
+      Origin: "https://act.hoyolab.com"
+    };
+    if (game.game === "Zenless Zone Zero") headers["x-rpc-signgame"] = "zzz";
+    return headers;
+}
+
 // Function to handle HTTP requests
-const fetchUrls = async (urls, token) => {
+const fetchUrls = async (gameMaps, token) => {
     log(`Starting HTTP requests`);
     try {
-        const responses = await Promise.all(urls.map(url => UrlFetchApp.fetch(url, { method: 'POST', headers: { Cookie: token }, muteHttpExceptions: true })));
+        const responses = await Promise.all(
+            gameMaps.map(
+                game => UrlFetchApp.fetch(
+                    game.url, { method: 'POST', headers: buildHeaders(game, token), muteHttpExceptions: true }
+                )
+            )
+        );
         log(`HTTP requests completed`);
         return responses.map(response => {
             const content = response.getContentText();
@@ -101,26 +122,25 @@ const main = async () => {
     const results = [];
     for (const profile of profiles) {
         log(`Processing profile: ${profile.accountName}`);
-        const urlsToCheck = [];
-        const gameNames = [];
+        const gameMap = [];
 
-        if (profile.genshin) { urlsToCheck.push(urls.genshin); gameNames.push("Genshin Impact"); }
-        if (profile.honkai_star_rail) { urlsToCheck.push(urls.starRail); gameNames.push("Honkai Star Rail"); }
-        if (profile.honkai_3) { urlsToCheck.push(urls.honkai3); gameNames.push("Honkai Impact 3"); }
-        if (profile.zenless) { urlsToCheck.push(urls.zenless); gameNames.push("Zenless Zone Zero"); } // ZZZ Update
+        if (profile.genshin) gameMap.push({game: "Genshin Impact", url: urls.genshin});
+        if (profile.honkai_star_rail) gameMap.push({game: "Honkai Star Rail", url: urls.starRail});
+        if (profile.honkai_3) gameMap.push({game: "Honkai Impact 3", url: urls.honkai3});
+        if (profile.zenless) gameMap.push({game: "Zenless Zone Zero", url: urls.zenless});
 
-        const responses = await fetchUrls(urlsToCheck, profile.token);
+        const responses = await fetchUrls(gameMap, profile.token);
         
         // Check each response and customize the message accordingly
-        const profileResult = gameNames.map((name, index) => {
+        const profileResult = gameMap.map((game, index) => {
             if (responses[index] === "OK") {
-                return `${name}: Check-in Success!`;
+                return `${game.game}: Check-in Success!`;
             } else if (responses[index].includes("already checked in today")  || responses[index].includes("already signed in")) {
-                return `${name}: Already Checked in today!`;
+                return `${game.game}: Already Checked in today!`;
             } else if (responses[index].includes("Not logged in") || responses[index].includes("Please log in to take part in the event")) {
-                return `${name}: There's some issue with your provided account settings!`;
+                return `${game.game}: There's some issue with your provided account settings!`;
             } else {
-                return `${name}: Unknown response: ${responses[index]}`;
+                return `${game.game}: Unknown response: ${responses[index]}`;
             }
         }).join("\n");
         
